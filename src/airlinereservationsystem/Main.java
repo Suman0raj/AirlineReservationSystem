@@ -5,359 +5,355 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author CSEMN(Mahmoud Nasser)
+ * Airline Reservation System
+ * Author: CSEMN (Mahmoud Nasser)
  */
 public class Main {
 
+    private static Scanner input = new Scanner(System.in);
+
     public static void main(String[] args) {
         ProjectDB.initialize(); // Read all saved data
-        print_header();
-        main_menu();
-        print_footer();
+        printHeader();
+        mainMenu();
+        printFooter();
     }
 
-    private static void print_header() {
-        for (short i = 0; i < 49; i++) {
-            System.out.print("-");
-        }
+    private static void printHeader() {
+        printLine(49);
         System.out.println("\n|\tEgypt Airline Reservation System\t|");
-        for (short i = 0; i < 49; i++) {
-            System.out.print("-");
-        }
+        printLine(49);
         System.out.print("\n\n");
     }
 
-    private static void print_footer() {
-        for (short i = 0; i < 41; i++) {
-            System.out.print("-");
-        }
+    private static void printFooter() {
+        printLine(41);
         System.out.println("\n|\tCoded By: Mahmoud Nasser\t|");
         System.out.println("|\tClass   : CSE-54\t\t|");
         System.out.println("|\tSection : 4\t\t\t|");
-        for (short i = 0; i < 41; i++) {
-            System.out.print("-");
-        }
+        printLine(41);
         System.out.print("\n\n");
     }
 
-    private static void main_menu() {
-        System.out.println("=> Main Menu <=");
-        System.out.println("1- Passengers Menu");
-        System.out.println("2- Flight Management Menu");
-        System.out.println("3- Exit System");
-        System.out.println("---------------");
-        short choice;
-        Scanner input = new Scanner(System.in);
-        do {
+    private static void printLine(int length) {
+        for (int i = 0; i < length; i++) {
+            System.out.print("-");
+        }
+    }
+
+    private static void mainMenu() {
+        while (true) {
+            System.out.println("=> Main Menu <=");
+            System.out.println("1- Passengers Menu");
+            System.out.println("2- Flight Management Menu");
+            System.out.println("3- Exit System");
+            System.out.println("---------------");
             System.out.print("Choice: ");
-            choice = input.nextShort();
+            short choice = input.nextShort();
             switch (choice) {
                 case 1:
-                    System.out.println();
-                    passengers_menu();
+                    passengersMenu();
                     break;
                 case 2:
-                    System.out.println();
-                    flights_menu();
+                    flightsMenu();
                     break;
                 case 3:
                     return;
                 default:
                     System.out.println("ERROR: Choice not valid");
             }
-        } while (choice < 1 || choice > 3);
+        }
     }
 
-    private static void passengers_menu() {
-        System.out.println("=> Passengers Menu <=");
-        System.out.println("1- Add Customer");
-        System.out.println("2- View All Customers");
-        System.out.println("3- Remove Customer");
-        System.out.println("4- New Reservation");
-        System.out.println("5- view All Reservations");
-        System.out.println("6- Cancle Reservation");
-        System.out.println("7- Main Menu");
-        System.out.println("---------------");
-        short choice;
-        int index;
-        Scanner input = new Scanner(System.in);
-        do {
+    private static void passengersMenu() {
+        while (true) {
+            System.out.println("=> Passengers Menu <=");
+            System.out.println("1- Add Customer");
+            System.out.println("2- View All Customers");
+            System.out.println("3- Remove Customer");
+            System.out.println("4- New Reservation");
+            System.out.println("5- View All Reservations");
+            System.out.println("6- Cancel Reservation");
+            System.out.println("7- Main Menu");
+            System.out.println("---------------");
             System.out.print("Choice: ");
-            choice = input.nextShort();
+            short choice = input.nextShort();
             switch (choice) {
                 case 1:
-                    System.out.println("=> NEW CUSTOMERS <=");
-                    input = new Scanner(System.in); // refresh scanner to avoid errors
-                    System.out.print("Full Name: ");
-                    String name = input.nextLine();
-                    System.out.print("Address: ");
-                    String address = input.nextLine();
-                     {
-                        try {
-                            ProjectDB.add(new Person(name, address));
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    System.out.println("Added successfully : " + name + "\n");
-                    passengers_menu();
+                    addCustomer();
                     break;
                 case 2:
-                    System.out.println("=> CUSTOMERS TABLE <=");
-                    Person.show_all();
-                    passengers_menu();
+                    viewAllCustomers();
                     break;
                 case 3:
-                    System.out.println("=> CUSTOMERS TABLE <=");
-                    Person.show_all();
-                    do {
-                        System.out.print("Customer Index to remove : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.person_list.size());
-                    ProjectDB.person_list.remove(ProjectDB.person_list.get(index - 1));
-                     {
-                        try {
-                            ProjectDB.updatePersonFile();
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    System.out.println("Removed Successfully!\n");
-                    passengers_menu();
+                    removeCustomer();
                     break;
                 case 4:
-                    System.out.println("=> NEW RESERVATION <=");
-                    //Choose person
-                    Person.show_all();
-                    do {
-                        System.out.print("Customer Index : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.person_list.size());
-                    Person p = ProjectDB.person_list.get(index - 1);
-                    //Choose flight
-                    ScheduledFlight.show_all();
-                    boolean allGood;
-                    ScheduledFlight scf;
-                    do {
-                        do {
-                            System.out.print("Flight Index : ");
-                            index = input.nextInt();
-                        } while (index < 1 || index > ProjectDB.scheduled_flight_list.size());
-                        scf = ProjectDB.scheduled_flight_list.get(index - 1);
-                        allGood = true;
-                        if (scf.capacity == Passenger.getSCFlightPassengersCount(scf.filght_number)) {
-                            System.out.println("This flight is at maximum capcity,pick another.");
-                            allGood = false;
-                        }
-
-                    } while (!allGood);
-                    int prevLen = ProjectDB.passenger_list.size();
-                     {
-                        try {
-                            ProjectDB.add(new Passenger(p, scf.filght_number));
-                        } catch (IOException ex) {
-                            System.out.println("ERROR : FILE NOT FOUND !");
-                        }
-                    }
-                    int afterLen = ProjectDB.passenger_list.size();
-                    if (prevLen != afterLen) {
-                        System.out.println("Reservation completed : " + p.name + " (" + scf.from + " -> " + scf.to + ")\n");
-                    }
-                    passengers_menu();
+                    newReservation();
                     break;
                 case 5:
-                    System.out.println("=> RESERVATIONS TABLE <=");
-                    Passenger.show_all();
-                    passengers_menu();
+                    viewAllReservations();
                     break;
                 case 6:
-                    System.out.println("=> RESERVATIONS TABLE <=");
-                    Passenger.show_all();
-                    do {
-                        System.out.print("Passenger Index to Cancle trip for : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.passenger_list.size());
-                    ProjectDB.passenger_list.remove(ProjectDB.passenger_list.get(index - 1));
-                     {
-                        try {
-                            ProjectDB.updatePassengerFile();
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    System.out.println("Reservation Canceled Successfully!\n");
-                    passengers_menu();
+                    cancelReservation();
                     break;
                 case 7:
-                    System.out.println();
-                    main_menu();
-                    break;
+                    return;
                 default:
                     System.out.println("ERROR: Choice not valid");
             }
-        } while (choice < 1 || choice > 7);
-
+        }
     }
 
-    private static void flights_menu() {
-        System.out.println("=> Flight Management Menu <=");
-        System.out.println("1- Add New Flight Description");
-        System.out.println("2- View All Flight Description");
-        System.out.println("3- Remove Flight Description");
-        System.out.println("4- Schedule New Flight");
-        System.out.println("5- view All Scheduled Flights");
-        System.out.println("6- Cancle Scheduled Flight");
-        System.out.println("7- View Scheduled Flight Passengers");
-        System.out.println("8- Main Menu");
-        System.out.println("---------------");
-        short choice;
-        int index;
-        Scanner input = new Scanner(System.in);
-        do {
+    private static void flightsMenu() {
+        while (true) {
+            System.out.println("=> Flight Management Menu <=");
+            System.out.println("1- Add New Flight Description");
+            System.out.println("2- View All Flight Descriptions");
+            System.out.println("3- Remove Flight Description");
+            System.out.println("4- Schedule New Flight");
+            System.out.println("5- View All Scheduled Flights");
+            System.out.println("6- Cancel Scheduled Flight");
+            System.out.println("7- View Scheduled Flight Passengers");
+            System.out.println("8- Main Menu");
+            System.out.println("---------------");
             System.out.print("Choice: ");
-            choice = input.nextShort();
+            short choice = input.nextShort();
             switch (choice) {
                 case 1:
-                    System.out.println("=> NEW FLIGHT DESCRIPTION <=");
-                    input = new Scanner(System.in); // refresh scanner to avoid errors
-                    System.out.print("From : ");
-                    String from = input.nextLine();
-                    System.out.print("To   : ");
-                    String to = input.nextLine();
-                    String depTime,
-                     arrTime;
-                    do {
-                        System.out.print("Departure time (HH:MM): ");
-                        depTime = input.nextLine();
-                    } while (!FlightDescription.check_time(depTime));
-                    do {
-                        System.out.print("Arrival   time (HH:MM): ");
-                        arrTime = input.nextLine();
-                    } while (!FlightDescription.check_time(arrTime));
-
-                    System.out.print("Capacity : ");
-                    input = new Scanner(System.in);
-                    int cap = input.nextInt();
-                    int prevSize = ProjectDB.flight_desc_list.size();
-                     {
-                        try {
-                            ProjectDB.add(new FlightDescription(from, to, depTime, arrTime, cap));
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    int afterSize = ProjectDB.flight_desc_list.size();
-                    if (prevSize != afterSize) {
-                        System.out.println("Flight Description added successfully : " + from + " -> " + to + "\n");
-                    }
-                    flights_menu();
+                    addFlightDescription();
                     break;
                 case 2:
-                    System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
-                    FlightDescription.show_all();
-                    flights_menu();
+                    viewAllFlightDescriptions();
                     break;
                 case 3:
-                    System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
-                    FlightDescription.show_all();
-                    do {
-                        System.out.print("Flight description index to remove : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.flight_desc_list.size());
-                    ProjectDB.flight_desc_list.remove(ProjectDB.flight_desc_list.get(index - 1));
-                     {
-                        try {
-                            ProjectDB.updateFlightDescFile();
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    System.out.println("Flight description removed Successfully!\n");
-                    flights_menu();
+                    removeFlightDescription();
                     break;
                 case 4:
-                    System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
-                    FlightDescription.show_all();
-
-                    do {
-                        System.out.print("Flight description index to schedule : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.flight_desc_list.size());
-                    FlightDescription fd = ProjectDB.flight_desc_list.get(index - 1);
-                    input = new Scanner(System.in); // refresh scanner to avoid errors
-                    String date;
-                    do {
-                        System.out.print("Date (YYYY/MM/DD) : ");
-                        date = input.nextLine();
-                    } while (!ScheduledFlight.check_date_format(date));
-                    int prevLen = ProjectDB.scheduled_flight_list.size();
-                     {
-                        try {
-                            ProjectDB.add(new ScheduledFlight(fd, date));
-                        } catch (IOException ex) {
-                            System.out.println("ERROR : FILE NOT FOUND !");
-                        }
-                    }
-                    int afterLen = ProjectDB.scheduled_flight_list.size();
-                    if (prevLen != afterLen) {
-                        System.out.println("Scheduled " + date + " for flight : " + fd.from + " -> " + fd.to + "\n");
-                    }
-                    flights_menu();
+                    scheduleNewFlight();
                     break;
                 case 5:
-                    System.out.println("=> SCHEDULED FLIGHTS TABLE <=");
-                    ScheduledFlight.show_all();
-                    flights_menu();
+                    viewAllScheduledFlights();
                     break;
                 case 6:
-                    System.out.println("=> SCHEDULED FLIGHT TABLE <=");
-                    ScheduledFlight.show_all();
-                    do {
-                        System.out.print("Scheduled Flight index to canceled : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.scheduled_flight_list.size());
-                    int f_num = ProjectDB.scheduled_flight_list.get(index - 1).filght_number;
-                    ProjectDB.scheduled_flight_list.remove(ProjectDB.scheduled_flight_list.get(index - 1));
-                     {
-                        try {
-                            ProjectDB.updateSCFlightFile();
-                            // Also remove all reservations for this flight
-                            ArrayList<Passenger> remList=new ArrayList();
-                            for (Passenger p : ProjectDB.passenger_list) {
-                                if (p.filght_number == f_num) {
-                                    remList.add(p);
-                                }
-                            }
-                            for (Passenger p : remList) {
-                                ProjectDB.passenger_list.remove(p);
-                            }
-                            ProjectDB.updatePassengerFile();
-                            
-                        } catch (IOException ex) {
-                            System.out.println("ERROR: File not FOund!");
-                        }
-                    }
-                    System.out.println("Scheduled Flight & Reservations canceled Successfully!\n");
-                    flights_menu();
+                    cancelScheduledFlight();
                     break;
                 case 7:
-                    System.out.println("=> SCHEDULED FLIGHT TABLE <=");
-                    ScheduledFlight.show_all();
-                    do {
-                        System.out.print("Flight Index : ");
-                        index = input.nextInt();
-                    } while (index < 1 || index > ProjectDB.scheduled_flight_list.size());
-                    int flight_num = ProjectDB.scheduled_flight_list.get(index - 1).filght_number;
-                    Passenger.show_only_flight_no(flight_num);
-                    flights_menu();
+                    viewScheduledFlightPassengers();
                     break;
                 case 8:
-                    System.out.println();
-                    main_menu();
-                    break;
+                    return;
                 default:
                     System.out.println("ERROR: Choice not valid");
             }
-        } while (choice < 1 || choice > 8);
+        }
     }
-}
+
+    private static void addCustomer() {
+        System.out.println("=> NEW CUSTOMER <=");
+        input.nextLine(); // Clear buffer
+        System.out.print("Full Name: ");
+        String name = input.nextLine();
+        System.out.print("Address: ");
+        String address = input.nextLine();
+        try {
+            ProjectDB.add(new Person(name, address));
+            System.out.println("Added successfully: " + name + "\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void viewAllCustomers() {
+        System.out.println("=> CUSTOMERS TABLE <=");
+        Person.showAll();
+    }
+
+    private static void removeCustomer() {
+        System.out.println("=> CUSTOMERS TABLE <=");
+        Person.showAll();
+        int index;
+        do {
+            System.out.print("Customer Index to remove: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.personList.size());
+        ProjectDB.personList.remove(index - 1);
+        try {
+            ProjectDB.updatePersonFile();
+            System.out.println("Removed Successfully!\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void newReservation() {
+        System.out.println("=> NEW RESERVATION <=");
+        Person.showAll();
+        int index;
+        do {
+            System.out.print("Customer Index: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.personList.size());
+        Person p = ProjectDB.personList.get(index - 1);
+        ScheduledFlight.showAll();
+        boolean allGood;
+        ScheduledFlight scf;
+        do {
+            do {
+                System.out.print("Flight Index: ");
+                index = input.nextInt();
+            } while (index < 1 || index > ProjectDB.scheduledFlightList.size());
+            scf = ProjectDB.scheduledFlightList.get(index - 1);
+            allGood = true;
+            if (scf.capacity == Passenger.getSCFlightPassengersCount(scf.flightNumber)) {
+                System.out.println("This flight is at maximum capacity, pick another.");
+                allGood = false;
+            }
+        } while (!allGood);
+        try {
+            ProjectDB.add(new Passenger(p, scf.flightNumber));
+            System.out.println("Reservation completed: " + p.name + " (" + scf.from + " -> " + scf.to + ")\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void viewAllReservations() {
+        System.out.println("=> RESERVATIONS TABLE <=");
+        Passenger.showAll();
+    }
+
+    private static void cancelReservation() {
+        System.out.println("=> RESERVATIONS TABLE <=");
+        Passenger.showAll();
+        int index;
+        do {
+            System.out.print("Passenger Index to cancel trip for: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.passengerList.size());
+        ProjectDB.passengerList.remove(index - 1);
+        try {
+            ProjectDB.updatePassengerFile();
+            System.out.println("Reservation canceled successfully!\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void addFlightDescription() {
+        System.out.println("=> NEW FLIGHT DESCRIPTION <=");
+        input.nextLine(); // Clear buffer
+        System.out.print("From: ");
+        String from = input.nextLine();
+        System.out.print("To: ");
+        String to = input.nextLine();
+        String depTime, arrTime;
+        do {
+            System.out.print("Departure time (HH:MM): ");
+            depTime = input.nextLine();
+        } while (!FlightDescription.checkTime(depTime));
+        do {
+            System.out.print("Arrival time (HH:MM): ");
+            arrTime = input.nextLine();
+        } while (!FlightDescription.checkTime(arrTime));
+        System.out.print("Capacity: ");
+        int cap = input.nextInt();
+        try {
+            ProjectDB.add(new FlightDescription(from, to, depTime, arrTime, cap));
+            System.out.println("Flight Description added successfully: " + from + " -> " + to + "\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void viewAllFlightDescriptions() {
+        System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
+        FlightDescription.showAll();
+    }
+
+    private static void removeFlightDescription() {
+        System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
+        FlightDescription.showAll();
+        int index;
+        do {
+            System.out.print("Flight description index to remove: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.flightDescList.size());
+        ProjectDB.flightDescList.remove(index - 1);
+        try {
+            ProjectDB.updateFlightDescFile();
+            System.out.println("Flight description removed successfully!\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void scheduleNewFlight() {
+        System.out.println("=> FLIGHT DESCRIPTION TABLE <=");
+        FlightDescription.showAll();
+        int index;
+        do {
+            System.out.print("Flight description index to schedule: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.flightDescList.size());
+        FlightDescription fd = ProjectDB.flightDescList.get(index - 1);
+        input.nextLine(); // Clear buffer
+        String date;
+        do {
+            System.out.print("Date (YYYY/MM/DD): ");
+            date = input.nextLine();
+        } while (!ScheduledFlight.checkDateFormat(date));
+        try {
+            ProjectDB.add(new ScheduledFlight(fd, date));
+            System.out.println("Scheduled " + date + " for flight: " + fd.from + " -> " + fd.to + "\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void viewAllScheduledFlights() {
+        System.out.println("=> SCHEDULED FLIGHTS TABLE <=");
+        ScheduledFlight.showAll();
+    }
+
+    private static void cancelScheduledFlight() {
+        System.out.println("=> SCHEDULED FLIGHT TABLE <=");
+        ScheduledFlight.showAll();
+        int index;
+        do {
+            System.out.print("Scheduled flight index to cancel: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.scheduledFlightList.size());
+        int flightNum = ProjectDB.scheduledFlightList.get(index - 1).flightNumber;
+        ProjectDB.scheduledFlightList.remove(index - 1);
+        try {
+            ProjectDB.updateSCFlightFile();
+            // Also remove all reservations for this flight
+            ArrayList<Passenger> remList = new ArrayList<>();
+            for (Passenger p : ProjectDB.passengerList) {
+                if (p.flightNumber == flightNum) {
+                    remList.add(p);
+                }
+            }
+            ProjectDB.passengerList.removeAll(remList);
+            ProjectDB.updatePassengerFile();
+            System.out.println("Scheduled flight & reservations canceled successfully!\n");
+        } catch (IOException ex) {
+            System.out.println("ERROR: File not found!");
+        }
+    }
+
+    private static void viewScheduledFlightPassengers() {
+        System.out.println("=> SCHEDULED FLIGHT TABLE <=");
+        ScheduledFlight.showAll();
+        int index;
+        do {
+            System.out.print("Flight index: ");
+            index = input.nextInt();
+        } while (index < 1 || index > ProjectDB.scheduledFlightList.size());
+        int flightNum = ProjectDB.scheduledFlightList.get(index - 1).flightNumber;
+        Passenger.showOnlyFlightNo(flightNum);
+    }
+                }
+                                
+            
